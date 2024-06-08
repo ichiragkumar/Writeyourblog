@@ -1,8 +1,10 @@
 name = "backend"
 compatibility_date = "2023-12-01"
 
-# [vars]
-# MY_VAR = "my-variable"
+
+
+[vars]
+"DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNWE4M2EyYTEtNmNjNi00NzMwLTkwNzMtYTZhNjQ1ZGJiYTAzIiwidGVuYW50X2lkIjoiY2ZlZGIyYjQzNjk5NWFlODA3NDg4MTUyMmU5Y2QyYzUxMTJhNTkyYWQzOWM3ZDgzMDRlYjUwYWJiNGU3ZTMyOCIsImludGVybmFsX3NlY3JldCI6ImIwMWJlMWMxLTdiZmMtNDMxZS04NTI4LWNkZjg0YTRmNjA0NSJ9.r1sRUJTW8sox8ZIBvQCscdfYMP64dfKJjh2qVSnJnf8""
 
 # [[kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"
