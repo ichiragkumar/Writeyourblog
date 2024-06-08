@@ -1,18 +1,77 @@
 import { Hono } from 'hono'
+import { withAccelerate } from '@prisma/extension-accelerate'
+import { decode, sign, verify } from 'hono/jwt'
+import { PrismaClient } from '@prisma/client/edge'
+const app = new Hono<{
+	Bindings: {
+		DATABASE_URL: string,
+    JWT_SECRET:string
+	}
+}>();
 
-const app = new Hono()
+
 
 app.get('/', (c) => {
+  
+
   return c.text('Hello Hono!')
 })
 
-app.post('/api/v1/signup', (c) => {
-  return c.text('signup route')
+app.post('/api/v1/signup',async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate())
+
+  const body = await c.req.json()
+  try {
+    const userData = await prisma.user.create({
+      data:{
+        email:body.email,
+        password:body.password,
+      }
+    })
+  
+    const token = await sign({id:userData.id}, c.env.JWT_SECRET)
+    return c.json({token})
+    
+  } catch (error) {
+    c.status(500)
+    return c.json({error})
+    
+  }
+  
 })
 
 
-app.post('/api/v1/signin', (c) => {
-  return c.text('signin route')
+app.post('/api/v1/signin',async (c) => {
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate())
+
+  const body = await c.req.json()
+  try {
+    const userData = await prisma.user.findUnique({
+      where:{
+        email:body.email
+      }
+    })
+
+    if(!userData){
+      c.status(403)
+      return c.json({msg:"user not found"})
+    }
+
+    const token  = await sign({id:userData.id}, c.env.JWT_SECRET)
+    return c.json({token})
+
+
+  } catch (error) {
+    console.log(error);
+    
+    return c.text("sever error")
+  }
+ 
 })
 
 
