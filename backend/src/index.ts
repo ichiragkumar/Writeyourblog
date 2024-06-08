@@ -10,6 +10,29 @@ const app = new Hono<{
 }>();
 
 
+app.use('/api/v1/blog/*', async (c, next) => {
+  // what we need to do here,
+
+
+  // 1. get the Headers
+  // 2. verify the Headers
+  // 3. if the Headers are correct , can proceed
+  // 4. if Not, reject the Headers with 403
+
+  const headers =  c.req.header("Authorization")!
+  const token = headers.split(" ")[1]
+  
+  const response = await verify(token,c.env.JWT_SECRET)
+  if(response.id){
+    next()
+  }else{
+    c.status(403)
+    return c.json({msg:"unthorized"})
+  }
+  
+})
+
+
 
 app.get('/', (c) => {
   
@@ -53,8 +76,9 @@ app.post('/api/v1/signin',async (c) => {
   try {
     const userData = await prisma.user.findUnique({
       where:{
-        email:body.email
-      }
+        email:body.email,
+        password:body.password
+      } 
     })
 
     if(!userData){
@@ -73,6 +97,8 @@ app.post('/api/v1/signin',async (c) => {
   }
  
 })
+
+
 
 
 app.post('/api/v1/blog', (c) => {
